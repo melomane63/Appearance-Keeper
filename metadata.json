@@ -5,7 +5,7 @@
     "paypal": "melomane63"
     },
     "description": "Automatically saves and restores accents, GTK, shell theme, icons, cursors themes and wallpapers for light and dark modes",
-    "version": 1,
+    "version": 2,
     "shell-version": [
         "48",
         "49"
