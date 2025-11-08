@@ -12,8 +12,8 @@ export default class AppearanceKeeperExtension {
         this._userThemeSettings = null;
         this._storedWallpapers = { light: null, dark: null };
         this._handlers = [];
-        this._DEBUG = false; // 🔹 Activer ou désactiver les logs debug ici
-        this._suspendSave = false; // 🔒 Empêche les sauvegardes pendant l'application d'un thème
+        this._DEBUG = false; // 🔹 Enable or disable debug logs here
+        this._suspendSave = false; // 🔒 Prevent saves during theme application
     }
 
     enable() {
@@ -201,16 +201,13 @@ export default class AppearanceKeeperExtension {
                 'shell': this._getCurrentShellTheme() || '',
             };
 
+            const value = themeMap[param];
 
-const value = themeMap[param];
-
-// Ne plus ignorer '' pour le shell
-if (!value && param !== 'shell') {
-    this._log(`Empty value for ${param}, saving ignored`);
-    return;
-}
-
-
+            // Do not ignore empty string for shell
+            if (!value && param !== 'shell') {
+                this._log(`Empty value for ${param}, saving ignored`);
+                return;
+            }
 
             if (!this._validateThemeValue(value)) {
                 this._log(`Invalid value for ${param}, saving ignored`, 'error');
@@ -227,7 +224,7 @@ if (!value && param !== 'shell') {
         }
     }
 
-    // --- Wallpaper logic (inchangé) ---
+    // --- Wallpaper logic ---
     _isPairedWallpaper(uri) {
         if (!uri) return false;
         const filename = uri.replace('file://', '').split('/').pop() || '';
@@ -323,7 +320,7 @@ if (!value && param !== 'shell') {
         }
     }
 
-    // --- Shell theme functions modifiées ---
+    // --- Shell theme functions ---
     _getCurrentShellTheme() {
         try {
             return this._userThemeSettings ? this._userThemeSettings.get_string('name') || '' : '';
@@ -338,13 +335,13 @@ if (!value && param !== 'shell') {
             if (!this._userThemeSettings) return;
 
             if (!themeName) {
-                // Thème vide → reset vers le thème système
+                // Empty theme → reset to system theme
                 this._userThemeSettings.reset('name');
                 this._log('Shell theme reset to system default');
                 return;
             }
 
-            // Thème personnalisé
+            // Custom theme
             this._userThemeSettings.set_string('name', themeName);
             this._log(`Shell theme applied: ${themeName}`);
         } catch (e) {
@@ -355,7 +352,7 @@ if (!value && param !== 'shell') {
     // --- Optimized theme application ---
     async _applyTheme(isDark) {
         try {
-            this._suspendSave = true; // 🔒 bloque les sauvegardes pendant la mise à jour du thème
+            this._suspendSave = true; // 🔒 Block saves during theme update
 
             const prefix = isDark ? 'dark' : 'light';
             const gtk = this._getDconfString(`${prefix}-gtk-theme`, '');
@@ -390,7 +387,7 @@ if (!value && param !== 'shell') {
         } catch (e) {
             this._log(`Error in applyTheme - ${e}`, 'error');
         } finally {
-            this._suspendSave = false; // 🔓 réactive les sauvegardes
+            this._suspendSave = false; // 🔓 Re-enable saves
         }
     }
 
@@ -410,4 +407,3 @@ if (!value && param !== 'shell') {
         }
     }
 }
-
