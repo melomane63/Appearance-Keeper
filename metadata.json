@@ -1,0 +1,12 @@
+{
+    "uuid": "appearance-keeper@melomane13",
+    "name": "Appearance Keeper",
+    "description": "Automatically saves and restores accents, GTK, shell theme, icons, cursors themes and wallpapers for light and dark modes",
+    "version": 1,
+    "shell-version": [
+        "48",
+        "49"
+    ],
+    "url": "https://github.com/melomane13/appearance-keeper",
+    "settings-schema": "org.gnome.shell.extensions.appearance-keeper"
+}
