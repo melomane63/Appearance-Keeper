@@ -1,6 +1,9 @@
 {
     "uuid": "appearance-keeper@melomane13",
     "name": "Appearance Keeper",
+    "donations": {
+    "paypal": "melomane63"
+    },
     "description": "Automatically saves and restores accents, GTK, shell theme, icons, cursors themes and wallpapers for light and dark modes",
     "version": 1,
     "shell-version": [
