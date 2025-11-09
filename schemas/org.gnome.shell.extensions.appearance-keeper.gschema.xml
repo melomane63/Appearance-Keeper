@@ -1,115 +1,72 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-import Gtk from 'gi://Gtk';
-import Gio from 'gi://Gio';
-import GLib from 'gi://GLib';
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
 
-let settings = new Gio.Settings({ schema_id: 'org.gnome.shell.extensions.appearance-keeper' });
+  <schema id="org.gnome.shell.extensions.appearance-keeper"
+          path="/org/gnome/shell/extensions/appearance-keeper/">
 
-// --- Clés light/dark utilisées par l'extension ---
-const themeKeys = [
-    ['light-gtk-theme', 'dark-gtk-theme'],
-    ['light-shell-theme', 'dark-shell-theme'],
-    ['light-icon-theme', 'dark-icon-theme'],
-    ['light-cursor-theme', 'dark-cursor-theme'],
-    ['light-accent-color', 'dark-accent-color']
-];
+    <!-- Light theme (Day) -->
+    <key type="s" name="light-gtk-theme">
+      <default>'Adwaita'</default>
+      <summary>Light GTK theme</summary>
+      <description>GTK theme to use in day mode</description>
+    </key>
 
-// --- Clés pour les backgrounds affichées ---
-const bgKeys = ['light-background', 'dark-background'];
+    <key type="s" name="light-shell-theme">
+      <default>'Default'</default>
+      <summary>Light Shell theme</summary>
+      <description>Shell theme to use in day mode</description>
+    </key>
 
-// --- Fonction utilitaire pour récupérer les thèmes GTK installés ---
-function getGtkThemes() {
-    const themeDir = GLib.get_home_dir() + '/.themes';
-    try {
-        const file = Gio.File.new_for_path(themeDir);
-        if (!file.query_exists(null)) return ['Default'];
-        const enumerator = file.enumerate_children('standard::name', Gio.FileQueryInfoFlags.NONE, null);
-        const themes = [];
-        let info;
-        while ((info = enumerator.next_file(null))) {
-            themes.push(info.get_name());
-        }
-        enumerator.close(null);
-        return themes.length > 0 ? themes : ['Default'];
-    } catch (e) {
-        log(`AppearanceKeeperPrefs: Error fetching GTK themes - ${e}`);
-        return ['Default'];
-    }
-}
+    <key type="s" name="light-icon-theme">
+      <default>'Adwaita'</default>
+      <summary>Light icon theme</summary>
+      <description>Icon theme to use in day mode</description>
+    </key>
 
-// --- Valeurs par défaut pour autres menus ---
-const defaultOptions = ['Default', 'Option 1', 'Option 2', 'Option 3'];
+    <key type="s" name="light-cursor-theme">
+      <default>'Adwaita'</default>
+      <summary>Light cursor theme</summary>
+      <description>Cursor theme to use in day mode</description>
+    </key>
 
-// --- Fonction principale exportée par défaut ---
-export default function fillPreferencesWindow(window) {
-    const grid = new Gtk.Grid({
-        column_spacing: 20,
-        row_spacing: 10,
-        margin_top: 10,
-        margin_bottom: 10,
-        margin_start: 10,
-        margin_end: 10
-    });
+    <key type="s" name="light-accent-color">
+      <default>'blue'</default>
+      <summary>Light accent color</summary>
+      <description>Accent color to use in day mode</description>
+    </key>
 
-    let row = 0;
+    <!-- Dark theme (Night) -->
+    <key type="s" name="dark-gtk-theme">
+      <default>'Adwaita'</default>
+      <summary>Dark GTK theme</summary>
+      <description>GTK theme to use in night mode</description>
+    </key>
 
-    // --- Menus déroulants pour light/dark ---
-    themeKeys.forEach(([lightKey, darkKey]) => {
-        const labelLight = new Gtk.Label({ label: lightKey, halign: Gtk.Align.START });
-        const comboLight = new Gtk.ComboBoxText({ hexpand: true });
-        const labelDark = new Gtk.Label({ label: darkKey, halign: Gtk.Align.START });
-        const comboDark = new Gtk.ComboBoxText({ hexpand: true });
+    <key type="s" name="dark-shell-theme">
+      <default>'Default'</default>
+      <summary>Dark Shell theme</summary>
+      <description>Shell theme to use in night mode</description>
+    </key>
 
-        let options = defaultOptions;
-        if (lightKey.includes('gtk')) options = getGtkThemes();
+    <key type="s" name="dark-icon-theme">
+      <default>'Adwaita'</default>
+      <summary>Dark icon theme</summary>
+      <description>Icon theme to use in night mode</description>
+    </key>
 
-        options.forEach(opt => {
-            comboLight.append_text(opt);
-            comboDark.append_text(opt);
-        });
+    <key type="s" name="dark-cursor-theme">
+      <default>'Adwaita'</default>
+      <summary>Dark cursor theme</summary>
+      <description>Cursor theme to use in night mode</description>
+    </key>
 
-        // Initialiser les valeurs actuelles
-        const currentLight = settings.get_string(lightKey);
-        const currentDark = settings.get_string(darkKey);
-        if (currentLight) comboLight.set_active(options.indexOf(currentLight));
-        if (currentDark) comboDark.set_active(options.indexOf(currentDark));
+    <key type="s" name="dark-accent-color">
+      <default>'blue'</default>
+      <summary>Dark accent color</summary>
+      <description>Accent color to use in night mode</description>
+    </key>
 
-        // Sauvegarder les changements
-        comboLight.connect('changed', () => {
-            const activeText = comboLight.get_active_text();
-            if (activeText) settings.set_string(lightKey, activeText);
-        });
-        comboDark.connect('changed', () => {
-            const activeText = comboDark.get_active_text();
-            if (activeText) settings.set_string(darkKey, activeText);
-        });
+  </schema>
 
-        grid.attach(labelLight, 0, row, 1, 1);
-        grid.attach(comboLight, 1, row, 1, 1);
-        row++;
-        grid.attach(labelDark, 0, row, 1, 1);
-        grid.attach(comboDark, 1, row, 1, 1);
-        row++;
-    });
-
-    // --- Cases pour les backgrounds ---
-    bgKeys.forEach(key => {
-        const label = new Gtk.Label({ label: key, halign: Gtk.Align.START });
-        const valueLabel = new Gtk.Label({ label: settings.get_string(key) || '', halign: Gtk.Align.START });
-
-        // Mettre à jour automatiquement si la valeur change côté GSettings
-        settings.connect(`changed::${key}`, (settingsObj, changedKey) => {
-            valueLabel.set_text(settingsObj.get_string(changedKey) || '');
-        });
-
-        grid.attach(label, 0, row, 1, 1);
-        grid.attach(valueLabel, 1, row, 1, 1);
-        row++;
-    });
-
-    const frame = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 10 });
-    frame.append(grid);
-
-    window.set_child(frame);
-}
+</schemalist>
 
