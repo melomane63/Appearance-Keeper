@@ -4,6 +4,12 @@
   <schema id="org.gnome.shell.extensions.appearance-keeper"
           path="/org/gnome/shell/extensions/appearance-keeper/">
 
+    <key name="dark-light-toggle" type="as">
+      <default><![CDATA[['<Control><Super>t']]]></default>
+      <summary>Raccourci pour basculer le thème</summary>
+      <description>Raccourci clavier pour basculer entre les schémas de couleurs sombre et clair (Ctrl+Super+T).</description>
+    </key>
+
     <!-- Light theme (Day) -->
     <key type="s" name="light-gtk-theme">
       <default>'Adwaita'</default>
